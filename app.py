@@ -17,3 +17,17 @@ app.config['SECRET_KEY'] = 'secret'
 debug = DebugToolbarExtension(app)
 
 connect_db(app)
+
+@app.get('/')
+def redirect_to_user_list():
+    """ Re-directs GETs to root to user list endpoint """
+
+    return redirect('/users')
+
+@app.get('/users')
+def display_user_list():
+    """ Grabs the list of users and displays them """
+
+    users = User.query.all()
+
+    return render_template('users.html', users=users)
