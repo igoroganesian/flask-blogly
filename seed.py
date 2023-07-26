@@ -22,3 +22,4 @@ db.session.add(igor)
 
 # Commit--otherwise, this never gets saved!
 db.session.commit()
+
