@@ -6,7 +6,7 @@
 <div>
   <h1>{{ user.first_name }} {{ user.last_name }}</h1>
   <a href="/users/{{ user.id }}/edit"><button>Edit</button></a>
-  <form action="/users/{{ user.id }}/delete">
+  <form method="POST" action="/users/{{ user.id }}/delete">
     <button type="submit">Delete</button>
   </form>
 </div>

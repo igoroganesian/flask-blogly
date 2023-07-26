@@ -54,9 +54,57 @@ class UserViewTestCase(TestCase):
         db.session.rollback()
 
     def test_list_users(self):
+        """ Tests the user list page includes the test user """
+
         with self.client as c:
             resp = c.get("/users")
             self.assertEqual(resp.status_code, 200)
             html = resp.get_data(as_text=True)
             self.assertIn("test1_first", html)
             self.assertIn("test1_last", html)
+
+    def test_new_user_aform(self):
+        """ Tests the new user page has the appropriate <H1>"""
+
+        with self.client as c:
+            resp = c.get("/users/new")
+            self.assertEqual(resp.status_code, 200)
+            html = resp.get_data(as_text=True)
+            self.assertIn("Create a user", html)
+
+    def test_new_user_creation(self):
+        """ Tests to make sure new user is created """
+
+        with self.client as c:
+            resp = c.post('/users/new',
+                data={
+                    'first_name': 'test2_first',
+                    'last_name': 'test2_last',
+                    'image_url': 'http://foo.com/'
+                })
+            self.assertEqual(resp.status_code, 302)
+            self.assertEqual(resp.location, "/users")
+
+            newuser = User.query.filter_by(
+                first_name='test2_first'
+                ).all()
+            self.assertTrue(newuser)
+
+    def test_new_user_redirect(self):
+        """ Tests redirection to user list after new user creation """
+
+        with self.client as c:
+            resp = c.post('/users/new',
+                data={
+                    'first_name': 'test3_first',
+                    'last_name': 'test3_last',
+                    'image_url': 'http://foo.com/'
+                }, follow_redirects=True)
+
+            self.assertEqual(resp.status_code, 200)
+
+            html = resp.get_data(as_text=True)
+            self.assertIn("test3_first", html)
+            self.assertIn("test3_last", html)
+
+

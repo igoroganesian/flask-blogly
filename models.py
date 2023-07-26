@@ -1,6 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
+DEFAULT_IMAGE_URL = "https://rithm-students-media.s3.amazonaws.com/CACHE/images/user_photos/joel/67987019-1bc4-485b-b4a8-5bca9c2381d1-5281391517_21c58b50e0_o/18697a97aac35b539bf6d017aa499f0d.jpg"
+
 def connect_db(app):
     """Connect to database."""
     app.app_context().push()
@@ -29,6 +31,6 @@ class User(db.Model):
     )
 
     image_url = db.Column(
-        db.String(50),
+        db.String(250),
         nullable=True
     )
