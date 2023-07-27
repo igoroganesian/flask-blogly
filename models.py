@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 db = SQLAlchemy()
 
 DEFAULT_IMAGE_URL = "https://rithm-students-media.s3.amazonaws.com/CACHE/images/user_photos/joel/67987019-1bc4-485b-b4a8-5bca9c2381d1-5281391517_21c58b50e0_o/18697a97aac35b539bf6d017aa499f0d.jpg"
@@ -31,35 +32,39 @@ class User(db.Model):
     )
 
     image_url = db.Column(
-        db.String(250),  #text - no length
+        db.Text,
         nullable=True
     )
 
-#     class Post(db.Model):
+class Post(db.Model):
 
-#     __tablename__ = "users"
+    __tablename__ = "posts"
 
-#     id = db.Column(
-#         db.Integer,
-#         primary_key=True,
-#         autoincrement=True
-#         )
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+        autoincrement=True
+        )
 
-#     title = db.Column(
-#         db.String(50),
-#         nullable=False
-#     )
+    title = db.Column(
+        db.String(50),
+        nullable=False
+    )
 
-#     content = db.Column(
-#         db.String(250),
-#         nullable=False
-#     )
+    content = db.Column(
+        db.Text,
+        nullable=False
+    )
 
-#     created_at = db.Column(
+    created_at = db.Column(
+        db.DateTime(timezone = True),
+        nullable = False,
+        default = db.func.now()
+    )
 
-#     )
+    user_id = db.Column(
+        db.Integer(),
+        db.ForeignKey('users.id')
+    )
 
-#   from datetime import date
-
-# today = date.today()
-# print("Today's date:", today)
+    user = db.relationship('Post', backref='posts')

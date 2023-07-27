@@ -3,7 +3,7 @@
 import os
 
 from flask import Flask, request, render_template, redirect
-from models import connect_db, db, User
+from models import connect_db, db, User, Post
 from flask_debugtoolbar import DebugToolbarExtension
 
 app = Flask(__name__)
@@ -60,8 +60,9 @@ def show_user(user_id):
     """ Display individual user page """
 
     user = User.query.get_or_404(user_id)
+    posts = user.posts
 
-    return render_template('user-id.html', user=user)
+    return render_template('user-id.html', user=user, posts=posts)
 
 @app.get('/users/<int:user_id>/edit')
 def display_edit_form(user_id):
@@ -104,3 +105,25 @@ def delete_user(user_id):
     db.session.commit()
 
     return redirect('/users')
+
+@app.get('/users/<int:user_id>/posts/new')
+def display_post_form(user_id):
+    """ Display new post form"""
+
+    user = User.query.get_or_404(user_id)
+
+    return render_template('new-post.html', user=user)
+
+@app.post('/users/<int:user_id>/posts/new')
+def create_new_post(user_id):
+    """ Adds new post to user post list """
+
+    title = request.form["title"]
+    content = request.form["content"]
+
+    new_post = Post(title=title, content=content, user_id=user_id)
+
+    db.session.add(new_post)
+    db.session.commit()
+
+    return redirect(f'/users/{user_id}')
