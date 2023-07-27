@@ -127,3 +127,37 @@ def create_new_post(user_id):
     db.session.commit()
 
     return redirect(f'/users/{user_id}')
+
+@app.get('/posts/<int:post_id>')
+def view_post(post_id):
+    """ Display a post """
+
+    post = Post.query.get_or_404(post_id)
+    user = post.user
+
+    return render_template('post.html', user=user, post=post)
+
+@app.get('/posts/<int:post_id>/edit')
+def display_edit_post(post_id):
+    """ Display edit post form"""
+
+    post = Post.query.get_or_404(post_id)
+    user = post.user
+
+    return render_template('edit-post.html', user=user, post=post)
+
+@app.post('/posts/<int:post_id>/edit')
+def edit_post(post_id):
+    """ Edits an existing post and redirect to post page """
+
+    title = request.form["title"]
+    content = request.form["content"]
+
+    post = Post.query.get_or_404(post_id)
+
+    post.title = title
+    post.content = content
+
+    db.session.commit()
+
+    return redirect(f'/posts/{post_id}')

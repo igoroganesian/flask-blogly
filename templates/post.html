@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div>
+  <h1>{{ post.title }}</h1>
+  <p>{{ post.content }}</p>
+  <p>By {{ user.first_name }} {{ user.last_name }}</p>
+  <!-- product manager said to call this 'Cancel'. -->
+  <a href="/users/{{ user.id }}"><button>Back to User</button></a>
+  <a href="/posts/{{ post.id }}/edit"><button>Edit</button></a>
+  <form method="POST" action="/posts/{{ post.id }}/delete">
+    <button type="submit">Delete</button>
+  </form>
+</div>
+
+{% endblock %}

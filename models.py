@@ -36,12 +36,13 @@ class User(db.Model):
         nullable=True
     )
 
-TODO: parent has backref, child has ForeignKey
-    users = db.relationship('Post', backref='user')
+    posts = db.relationship('Post', backref='user')
 
 class Post(db.Model):
 
     __tablename__ = "posts"
+
+    # user = The user who is associated with this post
 
     id = db.Column(
         db.Integer,
