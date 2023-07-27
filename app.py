@@ -161,3 +161,15 @@ def edit_post(post_id):
     db.session.commit()
 
     return redirect(f'/posts/{post_id}')
+
+@app.post('/posts/<int:post_id>/delete')
+def delete_post(post_id):
+    """ deletes the specified post and redirect to user page """
+
+    post = Post.query.get_or_404(post_id)
+    user = post.user
+
+    db.session.delete(post)
+    db.session.commit()
+
+    return redirect(f'/users/{user.id}')

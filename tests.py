@@ -1,11 +1,10 @@
+from models import User, Post
+from app import app, db
+from unittest import TestCase
 import os
 
 os.environ["DATABASE_URL"] = "postgresql:///blogly_test"
 
-from unittest import TestCase
-
-from app import app, db
-from models import DEFAULT_IMAGE_URL, User
 
 # Make Flask errors be real errors, rather than HTML pages with error info
 app.config['TESTING'] = True
@@ -21,15 +20,102 @@ db.drop_all()
 db.create_all()
 
 
-class UserViewTestCase(TestCase):
-    """Test views for users."""
+# class UserViewTestCase(TestCase):
+#     """Test views for users."""
+
+#     def setUp(self):
+#         """Create test client, add sample data."""
+
+#         # As you add more models later in the exercise, you'll want to delete
+#         # all of their records before each test just as we're doing with the
+#         # User model below.
+#         User.query.delete()
+
+#         self.client = app.test_client()
+
+#         test_user = User(
+#             first_name="test1_first",
+#             last_name="test1_last",
+#             image_url=None,
+#         )
+
+#         db.session.add(test_user)
+#         db.session.commit()
+
+#         # We can hold onto our test_user's id by attaching it to self (which is
+#         # accessible throughout this test class). This way, we'll be able to
+#         # rely on this user in our tests without needing to know the numeric
+#         # value of their id, since it will change each time our tests are run.
+#         self.user_id = test_user.id
+
+#     def tearDown(self):
+#         """Clean up any fouled transaction."""
+#         db.session.rollback()
+
+#     def test_list_users(self):
+#         """ Tests the user list page includes the test user """
+
+#         with self.client as c:
+#             resp = c.get("/users")
+#             self.assertEqual(resp.status_code, 200)
+#             html = resp.get_data(as_text=True)
+#             self.assertIn("test1_first", html)
+#             self.assertIn("test1_last", html)
+
+#     def test_new_user_aform(self):
+#         """ Tests the new user page has the appropriate <H1>"""
+
+#         with self.client as c:
+#             resp = c.get("/users/new")
+#             self.assertEqual(resp.status_code, 200)
+#             html = resp.get_data(as_text=True)
+#             self.assertIn("Create a user", html)
+
+#     def test_new_user_redirect(self):
+#         """ Tests redirection to user list after new user creation """
+
+#         with self.client as c:
+#             resp = c.post('/users/new',
+#                           data={
+#                               'first_name': 'test2_first',
+#                               'last_name': 'test2_last',
+#                               'image_url': 'http://foo.com/'
+#                           })
+#             self.assertEqual(resp.status_code, 302)
+#             self.assertEqual(resp.location, "/users")
+
+#             newuser = User.query.filter_by(
+#                 first_name='test2_first'
+#             ).all()
+#             self.assertTrue(newuser)
+
+#     def test_new_user_creation(self):
+#         """ Tests to make sure new user is created """
+
+#         with self.client as c:
+#             resp = c.post('/users/new',
+#                           data={
+#                               'first_name': 'test3_first',
+#                               'last_name': 'test3_last',
+#                               'image_url': 'http://foo.com/'
+#                           }, follow_redirects=True)
+
+#             self.assertEqual(resp.status_code, 200)
+
+#             html = resp.get_data(as_text=True)
+#             self.assertIn("test3_first", html)
+#             self.assertIn("test3_last", html)
+
+# TODO: test user-id endpoints and return 401 if invalid
+
+
+class PostViewTestCase(TestCase):
+    """Test views for posts."""
 
     def setUp(self):
         """Create test client, add sample data."""
 
-        # As you add more models later in the exercise, you'll want to delete
-        # all of their records before each test just as we're doing with the
-        # User model below.
+        Post.query.delete()
         User.query.delete()
 
         self.client = app.test_client()
@@ -43,70 +129,88 @@ class UserViewTestCase(TestCase):
         db.session.add(test_user)
         db.session.commit()
 
-        # We can hold onto our test_user's id by attaching it to self (which is
-        # accessible throughout this test class). This way, we'll be able to
-        # rely on this user in our tests without needing to know the numeric
-        # value of their id, since it will change each time our tests are run.
         self.user_id = test_user.id
+        self.first_name = test_user.first_name
+        self.last_name = test_user.last_name
+
+        test_post1 = Post(
+            title="testpost1_title",
+            content="testpost1_content",
+            user_id=test_user.id
+        )
+
+        db.session.add(test_post1)
+        db.session.commit()
+
+        self.post_id = test_post1.id
 
     def tearDown(self):
-        """Clean up any fouled transaction."""
+
         db.session.rollback()
 
-    def test_list_users(self):
-        """ Tests the user list page includes the test user """
+    def test_list_posts(self):
+        """ Tests the post list on user page includes the test post """
 
         with self.client as c:
-            resp = c.get("/users")
+            resp = c.get(f"/users/{self.user_id}")
             self.assertEqual(resp.status_code, 200)
             html = resp.get_data(as_text=True)
-            self.assertIn("test1_first", html)
-            self.assertIn("test1_last", html)
+            self.assertIn("testpost1_title", html)
 
-    def test_new_user_aform(self):
-        """ Tests the new user page has the appropriate <H1>"""
+    def test_post_details(self):
+        """ Tests the post page contains test post title and content """
 
         with self.client as c:
-            resp = c.get("/users/new")
+            resp = c.get(f"/posts/{self.post_id}")
             self.assertEqual(resp.status_code, 200)
             html = resp.get_data(as_text=True)
-            self.assertIn("Create a user", html)
+            self.assertIn("testpost1_title", html)
+            self.assertIn("testpost1_content", html)
 
-    def test_new_user_creation(self):
-        """ Tests to make sure new user is created """
+    def test_new_post_form(self):
+        """ Tests the new post form contains 'Add Post for <user>' """
 
         with self.client as c:
-            resp = c.post('/users/new',
-                data={
-                    'first_name': 'test2_first',
-                    'last_name': 'test2_last',
-                    'image_url': 'http://foo.com/'
-                })
+            resp = c.get(f"/users/{self.user_id}/posts/new")
+            self.assertEqual(resp.status_code, 200)
+            html = resp.get_data(as_text=True)
+            self.assertIn(f"Add Post for {self.first_name} {self.last_name}", html)
+
+    def test_new_post_redirect(self):
+        """ Tests redirection to user details page after new post creation """
+
+        with self.client as c:
+            resp = c.post(f'/users/{self.user_id}/posts/new',
+                          data={
+                              'title': 'test_title2',
+                              'content': 'test_content2',
+                            }, follow_redirects=False)
             self.assertEqual(resp.status_code, 302)
-            self.assertEqual(resp.location, "/users")
+            self.assertEqual(resp.location, f"/users/{self.user_id}")
 
-            newuser = User.query.filter_by(
-                first_name='test2_first'
-                ).all()
-            self.assertTrue(newuser)
+            newpost = Post.query.filter_by(
+                title='test_title2'
+            ).all()
+            self.assertTrue(newpost)
 
-    def test_new_user_redirect(self):
-        """ Tests redirection to user list after new user creation """
+    def test_new_post_creation(self):
+        """ Tests to make sure new post is created """
 
         with self.client as c:
-            resp = c.post('/users/new',
-                data={
-                    'first_name': 'test3_first',
-                    'last_name': 'test3_last',
-                    'image_url': 'http://foo.com/'
-                }, follow_redirects=True)
+            resp = c.post(f'/users/{self.user_id}/posts/new',
+                          data={
+                              'title': 'test_title2',
+                              'content': 'test_content2',
+                            }, follow_redirects=True)
 
             self.assertEqual(resp.status_code, 200)
 
             html = resp.get_data(as_text=True)
-            self.assertIn("test3_first", html)
-            self.assertIn("test3_last", html)
+            self.assertIn("test_title2", html)
 
-#TODO: test user-id endpoints and return 401 if invalid
+
+
+
+
 
 
