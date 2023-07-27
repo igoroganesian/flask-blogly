@@ -42,6 +42,7 @@ def display_add_form():
 def create_new_user():
     """ Adds new user to db """
 
+    #TODO: Can we do this w/o declaring individual variables?
     first_name = request.form["first_name"]
     last_name = request.form["last_name"]
     image_url = request.form["image_url"]
@@ -73,12 +74,14 @@ def display_edit_form(user_id):
 def edit_user(user_id):
     """ Edits an existing user and redirect to user list """
 
+    #TODO: Can we do this w/o declaring individual variables?
     first_name = request.form["first_name"]
     last_name = request.form["last_name"]
     image_url = request.form["image_url"]
 
     user = User.query.get(user_id)
 
+    #TODO: Can we do this all in a single statement?
     user.first_name = first_name
     user.last_name = last_name
     user.image_url = image_url if image_url else None
