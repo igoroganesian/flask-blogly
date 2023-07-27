@@ -29,6 +29,7 @@ def display_user_list():
     """ Grabs the list of users and displays them """
 
     users = User.query.all()
+    #TODO: consider order
 
     return render_template('users.html', users=users)
 
@@ -45,7 +46,7 @@ def create_new_user():
     #TODO: Can we do this w/o declaring individual variables?
     first_name = request.form["first_name"]
     last_name = request.form["last_name"]
-    image_url = request.form["image_url"]
+    image_url = request.form["image_url"] or None
 
     new_user = User(first_name=first_name, last_name=last_name, image_url=image_url)
 
@@ -58,7 +59,7 @@ def create_new_user():
 def show_user(user_id):
     """ Display individual user page """
 
-    user = User.query.get(user_id)
+    user = User.query.get_or_404(user_id)
 
     return render_template('user-id.html', user=user)
 
@@ -66,7 +67,10 @@ def show_user(user_id):
 def display_edit_form(user_id):
     """ Display edit user form"""
 
-    user = User.query.get(user_id)
+    user = User.query.get_or_404(user_id)
+
+    if user.image_url == None:
+        user.image_url = ""
 
     return render_template('edit-user.html', user=user)
 
@@ -79,7 +83,7 @@ def edit_user(user_id):
     last_name = request.form["last_name"]
     image_url = request.form["image_url"]
 
-    user = User.query.get(user_id)
+    user = User.query.get_or_404(user_id)
 
     #TODO: Can we do this all in a single statement?
     user.first_name = first_name
@@ -94,11 +98,9 @@ def edit_user(user_id):
 def delete_user(user_id):
     """ deletes the specified user and redirect to user list """
 
-    user = User.query.get(user_id)
+    user = User.query.get_or_404(user_id)
 
     db.session.delete(user)
     db.session.commit()
 
     return redirect('/users')
-
-

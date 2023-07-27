@@ -107,4 +107,6 @@ class UserViewTestCase(TestCase):
             self.assertIn("test3_first", html)
             self.assertIn("test3_last", html)
 
+#TODO: test user-id endpoints and return 401 if invalid
+
 

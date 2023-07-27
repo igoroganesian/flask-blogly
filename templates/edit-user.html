@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Edit a User</h1>
+<h1>Edit {{user.first_name}} {{ user.last_name }}</h1>
 
 <form method="POST" action="/users/{{ user.id }}/edit">
     <input type="text" name="first_name" required value="{{ user.first_name }}">
@@ -10,12 +10,7 @@
     <input type="text" name="last_name" required value="{{ user.last_name }}">
     <label for="last_name"></label>
 
-    <input type="url" name="image_url"
-        {% if user.image_url %}
-            value="{{ user.image_url }}">
-        {% else %}
-            value="">
-        {% endif %}
+    <input type="url" name="image_url" value="{{ user.image_url }}">
     <label for="image_url"></label>
     <a href="/users/{{ user.id }}/"><button>Cancel</button></a>
     <button type="submit">Save</button>

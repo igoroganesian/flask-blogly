@@ -31,6 +31,35 @@ class User(db.Model):
     )
 
     image_url = db.Column(
-        db.String(250),
+        db.String(250),  #text - no length
         nullable=True
     )
+
+#     class Post(db.Model):
+
+#     __tablename__ = "users"
+
+#     id = db.Column(
+#         db.Integer,
+#         primary_key=True,
+#         autoincrement=True
+#         )
+
+#     title = db.Column(
+#         db.String(50),
+#         nullable=False
+#     )
+
+#     content = db.Column(
+#         db.String(250),
+#         nullable=False
+#     )
+
+#     created_at = db.Column(
+
+#     )
+
+#   from datetime import date
+
+# today = date.today()
+# print("Today's date:", today)
