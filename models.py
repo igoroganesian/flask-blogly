@@ -36,6 +36,9 @@ class User(db.Model):
         nullable=True
     )
 
+TODO: parent has backref, child has ForeignKey
+    users = db.relationship('Post', backref='user')
+
 class Post(db.Model):
 
     __tablename__ = "posts"
@@ -66,5 +69,3 @@ class Post(db.Model):
         db.Integer(),
         db.ForeignKey('users.id')
     )
-
-    user = db.relationship('Post', backref='posts')
