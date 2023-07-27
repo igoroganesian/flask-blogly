@@ -5,13 +5,13 @@
 
 <form action="/users/{{ user.id }}/posts/new" method="POST">
     <input type="text" name="title" required>
-    <label for="title"></label>
 
-    <input type="textarea" name="content" required>
+    <!--TODO: Switch this to text area element -->
+    <textarea name="content" required></textarea>
     <label for="content"></label>
 
-    <a href="/users/{{ user.id }}/"><button>Cancel</button></a>
     <button type="submit">Add</button>
 </form>
+<a href="/users/{{ user.id }}"><button>Cancel</button></a>
 
 {% endblock %}

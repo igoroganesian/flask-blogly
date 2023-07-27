@@ -5,10 +5,7 @@
 
 <form method="POST" action="/posts/{{ post.id }}/edit">
   <input type="text" name="title" required value="{{ post.title }}">
-  <label for="title"></label>
-
-  <input type="textarea" name="content" required value="{{ post.content }}">
-  <label for="content"></label>
+  <textarea name="content" required>{{ post.content }}</textarea>
 
   <!-- product manager is an idiot and said go to user page. we ignored them -->
   <a href="/posts/{{ post.id }}/"><button>Cancel</button></a>

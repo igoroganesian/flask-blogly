@@ -10,8 +10,8 @@ def connect_db(app):
     db.app = app
     db.init_app(app)
 
-"""Models for Blogly."""
 class User(db.Model):
+    """ A user creates posts """
 
     __tablename__ = "users"
 
@@ -39,6 +39,7 @@ class User(db.Model):
     posts = db.relationship('Post', backref='user')
 
 class Post(db.Model):
+    """ TODO: Doc string for posts """
 
     __tablename__ = "posts"
 
@@ -68,5 +69,6 @@ class Post(db.Model):
 
     user_id = db.Column(
         db.Integer(),
-        db.ForeignKey('users.id')
+        db.ForeignKey('users.id'),
+        nullable = False
     )

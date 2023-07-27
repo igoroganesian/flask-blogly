@@ -41,11 +41,13 @@ def display_add_form():
 
 @app.post('/users/new')
 def create_new_user():
-    """ Adds new user to db """
+    """ Adds new user to db TODO: ... and where we go """
 
     #TODO: Can we do this w/o declaring individual variables?
     first_name = request.form["first_name"]
     last_name = request.form["last_name"]
+    # NULL implies we don't know, but the user basically told us
+    # "I don't have an image yet or I don't have one"
     image_url = request.form["image_url"] or None
 
     new_user = User(first_name=first_name, last_name=last_name, image_url=image_url)
@@ -101,6 +103,9 @@ def delete_user(user_id):
 
     user = User.query.get_or_404(user_id)
 
+    # delete all the user's posts
+    Post.query.filter_by(user_id = user.id).delete()
+
     db.session.delete(user)
     db.session.commit()
 
@@ -114,12 +119,17 @@ def display_post_form(user_id):
 
     return render_template('new-post.html', user=user)
 
+# if the parameter is NOT an integer, it will auto return 404
 @app.post('/users/<int:user_id>/posts/new')
 def create_new_post(user_id):
     """ Adds new post to user post list """
 
     title = request.form["title"]
     content = request.form["content"]
+
+    # Alternative to line 133
+    # user = User.query.get_or_404(user_id)
+    # user.posts.append(Post(title=title, content=content))
 
     new_post = Post(title=title, content=content, user_id=user_id)
 
@@ -153,6 +163,7 @@ def edit_post(post_id):
     title = request.form["title"]
     content = request.form["content"]
 
+    # TODO: move to top and fail fast
     post = Post.query.get_or_404(post_id)
 
     post.title = title
