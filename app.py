@@ -50,7 +50,11 @@ def create_new_user():
     # "I don't have an image yet or I don't have one"
     image_url = request.form["image_url"] or None
 
-    new_user = User(first_name=first_name, last_name=last_name, image_url=image_url)
+    new_user = User(
+        first_name=first_name,
+        last_name=last_name,
+        image_url=image_url
+        )
 
     db.session.add(new_user)
     db.session.commit()
@@ -81,14 +85,12 @@ def display_edit_form(user_id):
 def edit_user(user_id):
     """ Edits an existing user and redirect to user list """
 
-    #TODO: Can we do this w/o declaring individual variables?
     first_name = request.form["first_name"]
     last_name = request.form["last_name"]
     image_url = request.form["image_url"]
 
     user = User.query.get_or_404(user_id)
 
-    #TODO: Can we do this all in a single statement?
     user.first_name = first_name
     user.last_name = last_name
     user.image_url = image_url if image_url else None
@@ -119,21 +121,21 @@ def display_post_form(user_id):
 
     return render_template('new-post.html', user=user)
 
-# if the parameter is NOT an integer, it will auto return 404
 @app.post('/users/<int:user_id>/posts/new')
 def create_new_post(user_id):
     """ Adds new post to user post list """
+
+    user = User.query.get_or_404(user_id)
 
     title = request.form["title"]
     content = request.form["content"]
 
     # Alternative to line 133
-    # user = User.query.get_or_404(user_id)
-    # user.posts.append(Post(title=title, content=content))
+    user.posts.append(Post(title=title, content=content))
 
-    new_post = Post(title=title, content=content, user_id=user_id)
+    # new_post = Post(title=title, content=content, user_id=user_id) original
+    # db.session.add(new_post)
 
-    db.session.add(new_post)
     db.session.commit()
 
     return redirect(f'/users/{user_id}')
@@ -160,11 +162,10 @@ def display_edit_post(post_id):
 def edit_post(post_id):
     """ Edits an existing post and redirect to post page """
 
+    post = Post.query.get_or_404(post_id)
+
     title = request.form["title"]
     content = request.form["content"]
-
-    # TODO: move to top and fail fast
-    post = Post.query.get_or_404(post_id)
 
     post.title = title
     post.content = content

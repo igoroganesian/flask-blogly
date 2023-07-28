@@ -25,7 +25,6 @@ class UserViewTestCase(TestCase):
     def setUp(self):
         """Create test client, add sample data."""
 
-        # TODO: Ask if there is a way to avoid having to do this
         Post.query.delete()
         User.query.delete()
 

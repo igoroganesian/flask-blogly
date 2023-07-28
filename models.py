@@ -11,7 +11,8 @@ def connect_db(app):
     db.init_app(app)
 
 class User(db.Model):
-    """ A user creates posts """
+    """ Individual user with first & last name and optional image,
+        can create posts """
 
     __tablename__ = "users"
 
@@ -39,7 +40,7 @@ class User(db.Model):
     posts = db.relationship('Post', backref='user')
 
 class Post(db.Model):
-    """ TODO: Doc string for posts """
+    """ Posts created by user with title & content, displayed on their personal page """
 
     __tablename__ = "posts"
 
@@ -71,4 +72,50 @@ class Post(db.Model):
         db.Integer(),
         db.ForeignKey('users.id'),
         nullable = False
+    )
+
+    tags = db.relationship(
+        'Tag',
+        secondary='post_tags',
+        backref='posts')
+
+class PostTag(db.Model):
+    """ """
+
+    __tablename__ = "post_tags"
+
+    post_id = db.Column(
+        db.Integer,
+        db.ForeignKey('posts.id'),
+        primary_key = True,
+        nullable = False
+        )
+
+    tag_id = db.Column(
+        db.Integer,
+        db.ForeignKey('tags.id'),
+        primary_key = True,
+        nullable = False
+         )
+
+    db.UniqueConstraint("post_id", "tag_id")
+    #TODO: necessary?
+
+    """ TAG BELOW """
+
+class Tag(db.Model):
+    """  """
+
+    __tablename__ = "tags"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+        autoincrement=True
+        )
+
+    name = db.Column(
+        db.Text,
+        nullable = False,
+        unique = True
     )
